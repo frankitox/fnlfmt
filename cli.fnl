@@ -5,9 +5,10 @@
 (local {: format-file : version} (require :fnlfmt))
 
 (fn help []
-  (print "Usage: fnlfmt [--no-comments] [--fix] FILENAME")
-  (print "With the --fix argument, updates the file in-place; otherwise")
-  (print "prints the formatted file to stdout."))
+  (print "Usage: fnlfmt [--no-comments] [--fix] FILENAME...")
+  (print "With the --fix argument, multiple files can be specified")
+  (print "and changes are made in-place; otherwise prints the")
+  (print "formatted file to stdout."))
 
 (local options [])
 
@@ -16,12 +17,15 @@
     (set options.no-comments true)
     (table.remove arg i)))
 
+(fn fix [filename]
+  (let [new (format-file filename options)
+        f (assert (io.open filename :w))]
+    (f:write new)
+    (f:close)))
+
 (match arg
   [:--version] (print (.. "fnlfmt version " version))
-  [:--fix filename nil] (let [new (format-file filename options)
-                              f (assert (io.open filename :w))]
-                          (f:write new)
-                          (f:close))
-  (where (or [:--help] [:-?] [:-h])) (help)
+  [:--fix & filenames] (each [_ filename (pairs filenames)] (fix filename))
+  (where (or [:--help] ["-?"] [:-h])) (help)
   [filename nil] (io.stdout:write (format-file filename options))
   _ (help))
