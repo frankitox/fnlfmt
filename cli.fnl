@@ -29,6 +29,7 @@
 (fn check-files [filenames]
   (-> (accumulate [ok? true _ filename (ipairs filenames)]
         (and (check-file filename) ok?))
+      (#(if $ 0 1))
       (os.exit)))
 
 (fn fix [filename]
