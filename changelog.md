@@ -1,5 +1,9 @@
 # History of user-visible changes
 
+## 0.3.2 / ???
+
+* Add `--check` command.
+
 ## 0.3.1 / 2023-08-03
 
 * Relicense to MIT.
