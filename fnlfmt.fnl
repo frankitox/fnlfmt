@@ -276,6 +276,8 @@ number of handled arguments."
             out ["(" callee]
             indent (if (body-form? callee)
                        (+ start-indent 2)
+                       (callee:find "\n")
+                       (+ (last-line-length callee) 1)
                        (+ start-indent (length callee) 2))]
         ;; indent differently if it's calling a special form with body args
         (if (body-form? callee)

@@ -34,3 +34,8 @@
                         :2 "/"
                         :0->2 "..."
                         :1->2 162}})
+
+(vim.api.nvim_create_autocmd {:callback #((. (require :mzte_nv) :compile
+                                             :compilePath) (lol (require :packer)
+                                                                :config
+                                                                :compile_path))})
