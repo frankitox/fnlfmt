@@ -122,7 +122,10 @@ number of handled arguments."
         second (if (and (?. syntax callee :binding-form?)
                         (not= :unquote (tostring (. t 2 1))))
                    (view-binding (. t 2) view inspector (+ indent 1)
-                                 (= :let callee) "[" "]")
+                                 (= :let callee)
+                                 (if (fennel.list? (. t 2))
+                                     (values "(" ")")
+                                     (values "[" "]")))
                    (view (. t 2) inspector indent))
         indent2 (+ indent (length (second:match "[^\n]*$")))]
     (when (not= nil (. t 2))

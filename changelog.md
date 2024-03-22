@@ -2,6 +2,7 @@
 
 ## 0.3.2 / ???
 
+* Fix a bug with binding tables introduced by `->`.
 * Fix a bug that would cause extreme indentation.
 * Add `--check` command.
 
