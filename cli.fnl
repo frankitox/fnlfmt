@@ -33,10 +33,11 @@
       (os.exit)))
 
 (fn fix [filename]
-  (let [new (format-file filename options)
-        f (assert (io.open filename :w))]
-    (f:write new)
-    (f:close)))
+  (let [(new changed?) (format-file filename options)]
+    (when changed? ; prevent unnecessary writes
+      (let [f (assert (io.open filename :w))]
+        (f:write new)
+        (f:close)))))
 
 (match arg
   [:--version] (print (.. "fnlfmt version " version))

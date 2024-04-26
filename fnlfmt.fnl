@@ -399,8 +399,8 @@ When f returns a truthy value, recursively walks the children."
   (let [f (match filename
             "-" io.stdin
             _ (or (io.open filename :r) (abort filename)))
-        contents (f:read :*all)
-        parser (-> (fennel.stringStream contents)
+        original (f:read :*all)
+        parser (-> (fennel.stringStream original)
                    (fennel.parser filename {:comments (not no-comments)}))
         out []]
     (f:close)
@@ -423,6 +423,7 @@ When f returns a truthy value, recursively walks the children."
             (set skip-next? false)))
       (set prev-ast ast))
     (table.insert out "")
-    (table.concat out "\n")))
+    (let [formatted (table.concat out "\n")]
+      (values formatted (not= formatted original)))))
 
 {: fnlfmt : format-file :version :0.3.2-dev}
