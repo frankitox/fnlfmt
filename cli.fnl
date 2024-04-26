@@ -19,12 +19,9 @@
     (table.remove arg i)))
 
 (fn check-file [filename]
-  (let [old (with-open [in (assert (io.open filename))] (in:read :*a))
-        new (format-file filename options)]
-    (or (= old new)
-        (do
-          (io.stderr:write (string.format "Not formatted: %s\n" filename))
-          false))))
+  (if (select 2 (format-file filename options))
+      (io.stderr:write (string.format "Not formatted: %s\n" filename))
+      true  ))
 
 (fn check-files [filenames]
   (-> (accumulate [ok? true _ filename (ipairs filenames)]
@@ -44,5 +41,6 @@
   [:--fix & filenames] (each [_ filename (pairs filenames)] (fix filename))
   [:--check & filenames] (check-files filenames)
   (where (or [:--help] ["-?"] [:-h])) (help)
-  [filename nil] (io.stdout:write (format-file filename options))
+  [filename nil] (io.stdout:write
+                  (pick-values 1 (format-file filename options)))
   _ (help))
