@@ -409,7 +409,7 @@ When f returns a truthy value, recursively walks the children."
       (assert ok? ast)
       (if (and skip-next? ast.bytestart ast.byteend)
           (do
-            (table.insert out (contents:sub ast.bytestart ast.byteend))
+            (table.insert out (original:sub ast.bytestart ast.byteend))
             (set skip-next? false))
           (= (fennel.comment ";; fnlfmt: skip") ast)
           (do
