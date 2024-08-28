@@ -2,6 +2,7 @@
 
 ## 0.3.2 / ???
 
+* Add man page.
 * Don't write to disk with `--fix` when file is unchanged.
 * Fix a bug with binding tables introduced by `->`.
 * Fix a bug that would cause extreme indentation.

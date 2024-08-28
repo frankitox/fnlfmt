@@ -3,6 +3,7 @@ LUA ?= lua
 DESTDIR ?=
 PREFIX ?= /usr/local
 BIN_DIR ?= $(PREFIX)/bin
+MAN_DIR ?= $(PREFIX)/share/man/man1
 
 SRC=cli.fnl fnlfmt.fnl
 fnlfmt: $(SRC)
@@ -27,9 +28,12 @@ lint: ; ./fennel --plugin ../fennel/src/linter.fnl -c fnlfmt.fnl > /dev/null
 
 install: fnlfmt
 	mkdir -p $(DESTDIR)$(BIN_DIR) && cp $< $(DESTDIR)$(BIN_DIR)/
+	mkdir -p $(DESTDIR)$(MAN_DIR)
+	cp fnlfmt.1 $(DESTDIR)$(MAN_DIR)/fnlfmt.1
 
 uninstall:
 	rm -f $(DESTDIR)$(BIN_DIR)/fnlfmt
+	rm -f $(DESTDIR)$(MAN_DIR)/fnlfmt.1
 
 check:
 	fennel-ls --check $(SRC) indentation.fnl
