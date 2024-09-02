@@ -106,6 +106,6 @@ Send patches or bug reports directly to the maintainer or the
 
 ## License
 
-Copyright © 2019-2023 Phil Hagelberg and contributors
+Copyright © 2019-2024 Phil Hagelberg and contributors
 
 Released under the MIT license; see LICENSE.
