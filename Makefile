@@ -30,7 +30,7 @@ fennel: ../fennel/fennel ; cp $< $@
 
 test: fnlfmt ; $(FENNEL) test.fnl
 count: ; cloc fnlfmt.fnl
-clean: ; rm fnlfmt fnlfmt.lua
+clean: ; rm -f fnlfmt fnlfmt.lua
 lint: ; fennel-ls --lint $(SRC)
 
 install: fnlfmt fnlfmt.lua

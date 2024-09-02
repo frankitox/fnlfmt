@@ -1,6 +1,6 @@
 # History of user-visible changes
 
-## 0.3.2 / ???
+## 0.3.2 / 2024-09-02
 
 * Add man page.
 * Don't write to disk with `--fix` when file is unchanged.
