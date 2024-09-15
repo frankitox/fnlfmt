@@ -1,5 +1,9 @@
 # History of user-visible changes
 
+## 0.3.3 / ???
+
+* ???
+
 ## 0.3.2 / 2024-09-02
 
 * Add man page.
