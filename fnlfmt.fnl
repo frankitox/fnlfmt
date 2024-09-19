@@ -264,7 +264,7 @@ number of handled arguments."
 
 (local maybe-body {:-> true :->> true :-?> true :-?>> true :doto true :if true})
 
-(local renames {"#" :length "~=" :not=})
+(local renames {"#" :length "~=" :not= :lambda "λ"})
 
 (fn body-form? [callee]
   (or (?. syntax callee :body-form?) (callee:find "%.with-")

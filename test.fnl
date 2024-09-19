@@ -12,7 +12,8 @@
               :sugar
               :skip
               :macro
-              :if])
+              :if
+              :lambda])
 
 (var pass 0)
 
