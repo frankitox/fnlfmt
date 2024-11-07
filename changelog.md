@@ -2,7 +2,7 @@
 
 ## 0.3.3 / ???
 
-* ???
+* Preserve notation for strings and numbers.
 
 ## 0.3.2 / 2024-09-02
 

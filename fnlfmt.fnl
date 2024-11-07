@@ -16,8 +16,18 @@
 
 (local syntax (fennel.syntax))
 
+(local raw-mt {:__fennelview #$.raw :__tostring #$.raw})
+
+(fn string? [ast]
+  (and (= raw-mt (getmetatable ast)) (= :string (type ast.value))))
+
+(fn number? [ast]
+  (and (= raw-mt (getmetatable ast)) (= :number (type ast.value))))
+
 (fn line [ast]
-  (. (fennel.ast-source ast) :line))
+  (if (= raw-mt (getmetatable ast))
+      ast.line
+      (. (fennel.ast-source ast) :line)))
 
 (fn last-line-length [line]
   (length (line:match "[^\n]*$")))
@@ -38,7 +48,7 @@ Returns the index of where the body of the function starts."
       (let [third (view (. t 3) inspector (+ indent 1))]
         (table.insert out " ")
         (table.insert out third)
-        (if (= :string (type (. t 4)))
+        (if (and (string? (. t 4)) (. t 5))
             (do
               (table.insert out (.. "\n" (string.rep " " start-indent)))
               (set inspector.escape-newlines? false)
@@ -61,7 +71,7 @@ Returns the index of where the body of the function starts."
                             (length (tostring next-ast)))
                          80))))
       ;; if it's not a let, it's probably an iterator binding
-      (and (or (= :string (type next-ast)) (: (tostring next-ast) :find "^&"))
+      (and (or (string? next-ast) (: (tostring next-ast) :find "^&"))
            (< 80 (+ indent 1 (last-line-length viewed) 1
                     (length (tostring next-ast))
                     (length (fennel.view next-next)))))))
@@ -163,8 +173,8 @@ number of handled arguments."
     (and (= :table (type second)) (= (line t) (line first) (line second)))))
 
 (fn scalar? [form]
-  (or (fennel.sym? form) (fennel.comment? form) (fennel.varg? form)
-      (not= :table (type form))))
+  (or (not= :table (type form)) (fennel.sym? form) (fennel.comment? form)
+      (fennel.varg? form) (string? form) (number? form)))
 
 (fn depth [form base]
   (if (scalar? form)
@@ -175,10 +185,7 @@ number of handled arguments."
 (fn preserve-same-line? [t i indent out viewed depth]
   (and (<= (+ indent (length (table.concat out)) (length viewed)) 80)
        (<= depth 3) (not (fennel.comment? (. t (- i 1))))
-       ;; most one-liners can be preserved by originally-same-lines, but forms
-       ;; with metaless contents (strings/numbers) can't, so we special-case
-       (or (and (not= :table (type (. t i))) (<= (length t) 4))
-           (and (originally-same-lines? t 1 i) (not (viewed:find "\n"))))))
+       (and (originally-same-lines? t 1 i) (not (viewed:find "\n")))))
 
 (fn view-body [t view inspector start-indent out callee]
   "Insert arguments to a call to a special that takes body arguments."
@@ -359,8 +366,8 @@ When f returns a truthy value, recursively walks the children."
     (when (and (not (fennel.list? form)) (not (fennel.sequence? form)))
       ;; Fennel's parser will always set the metatable, but we could get tables
       ;; from other places.
-      (match (getmetatable form)
-        mt (tset mt :__fennelview view-kv)
+      (case (getmetatable form)
+        mt (set mt.__fennelview view-kv)
         _ (setmetatable form {:__fennelview view-kv})))
     true))
 
@@ -393,14 +400,23 @@ When f returns a truthy value, recursively walks the children."
   (io.stderr:write (string.format "File not found: %s\n" filename))
   (os.exit 1))
 
+(fn parse-form [value source raw]
+  (if (and raw (or (= :string (type value)) (= :number (type value))))
+      (setmetatable (doto source
+                      (tset :raw raw)
+                      (tset :value value)) raw-mt)
+      value))
+
 (fn format-file [filename {: no-comments}]
   "Read source from a file and return formatted source."
-  (let [f (match filename
+  (let [f (case filename
             "-" io.stdin
             _ (or (io.open filename :r) (abort filename)))
         original (f:read :*all)
         parser (-> (fennel.stringStream original)
-                   (fennel.parser filename {:comments (not no-comments)}))
+                   (fennel.parser filename {:comments (not no-comments)
+                                            :plugins [{: parse-form
+                                                       :versions ["1.5.1"]}]}))
         out []]
     (f:close)
     (var (skip-next? prev-ast) false)

@@ -36,7 +36,7 @@
         (f:write new)
         (f:close)))))
 
-(match arg
+(case arg
   [:--version] (print (.. "fnlfmt version " version))
   [:--fix & filenames] (each [_ filename (pairs filenames)] (fix filename))
   [:--check & filenames] (check-files filenames)
