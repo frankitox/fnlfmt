@@ -28,53 +28,25 @@ before them. This does not work for nested forms.
 
 ## Description
 
-Formatting is essentially an aesthetic process; any automated attempt
-at doing it will necessarily encounter situations where it produces
-output that doesn't look as good as it would if a human were making
-the decisions. That said, the goal is to at worst emit output which,
-if less than ideal, is at least not objectionable. Currently the
-indentation decisions it makes are great, but it occasionally puts
-newlines in places that a human would not.
+The goal of `fnlfmt` is *not* to be The One Formatter that all Fennel
+programmers use to format their code. We assume that most of the time,
+Fennel programmers will use a text editor that already knows how to
+indent code correctly, and that `fnlfmt` supplements existing editor
+support in cases where for whatever reason the editor functionality
+cannot be used. This means that `fnlfmt` should be treated as one
+implementation of the standard format rather than being canonical itself.
 
-For the most part, `fnlfmt` follows established lisp conventions when
-determining how to format a given piece of code. Key/value tables are
-shown with each key/value pair on its own line, unless they are small
-enough to all fit on one line. Sequential tables similarly have each
-element on their own line unless they fit all on a single line. Tables
-with string keys and symbol values will use `{: foo : bar}` shorthand
-notation where possible.
-
-Calls are formatted differently depending on whether they are calling
-a regular function/macro or whether they're calling a special macro
-which is known to have a "body"; in the latter case every element is
-given its own line, usually indented 2 spaces in.
-
-Forms calling `match` and `if` are treated differently; if possible it
-will attempt to pair off their pattern/condition clauses with the body
-on the same line. If that can't fit, it falls back to one-form-per-line.
-
-Certain forms which have a body are sometimes allowed to keep their
-body on the same line as the call, if the original code has it that
-way, provided the body doesn't nest more than two levels and fits in
-the line length limit.
-
-Strings are formatted using `:colon-notation` where possible, unless
-they consist entirely of punctuation.
-
-Top level forms may or may not have blank lines between them depending on
-whether the input code spaces them out. Functions defined inside a
-body form get empty lines spacing them out as well.
-
-Similarly `if` forms and arrow forms will occasionally be allowed to
-be one line if the original code had them as one-liners.
-
-By design there is no way to configure it; the indentation should be
-considered canonical other than bugs or when new features are added to
-Fennel itself.
+By design there is no way to configure it. When it comes to
+indentation, the choices it makes should be correct other than bugs or
+when new features are added to Fennel itself. When it comes to where
+the line breaks are inserted, it tries its best, but there are
+certainly cases where a human could do better. Sometimes when it comes
+to line breaks it will defer to the existing code where possible.
 
 ## Known issues
 
 * Comments will not be wrapped.
+* Single-semicolon full-line comments will not be changed to double-semicolon.
 * When using fnlfmt as a library, it may modify the AST argument.
 * Function argument lists will be displayed one-per-line if they can't
   all fit on one line. (This is inherited from `fennel.view`.)
