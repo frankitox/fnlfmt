@@ -117,6 +117,12 @@ We want everything to be on one line as much as possible, (except for let)."
 
 (local force-initial-newline {:do true :eval-compiler true})
 
+(local slength (or (-?> (rawget _G :utf8) (. :len))
+                   ;; utf8-len from from fennel.view
+                   #(accumulate [n 0 _ (string.gmatch $
+                                                      "[%z\001-\127\192-\247]")]
+                      (+ n 1))))
+
 (fn view-init-body [t view inspector start-indent out callee]
   "Certain forms need special handling of their first few args. Returns the
 number of handled arguments."
@@ -126,7 +132,7 @@ number of handled arguments."
       (table.insert out " "))
   (let [indent (if (. force-initial-newline callee)
                    start-indent
-                   (+ start-indent (length callee)))
+                   (+ start-indent (slength callee)))
         ;; the handling of function args is very messy; sometimes they are
         ;; handled here and sometimes they're down in view-fn-args; kinda bad.
         second (if (and (?. syntax callee :binding-form?)
@@ -299,8 +305,6 @@ number of handled arguments."
         (newline-if-ends-in-comment out indent)
         (table.insert out ")")
         (table.concat out))))
-
-(local slength (or (-?> (rawget _G :utf8) (. :len)) #(length $)))
 
 (fn maybe-attach-comment [x indent cs]
   (if (and cs (< 0 (length cs)))
