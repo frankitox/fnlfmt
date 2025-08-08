@@ -169,9 +169,12 @@ number of handled arguments."
                                    :if true})
 
 (fn space-out-fns? [prev viewed start-index i]
-  ;; functions inside a body form shouldn't be spaced if they're the first thing
-  (and (not (= start-index i))
-       (or (prev:match "^ *%(fn [^%[]") (viewed:match "^ *%(fn [^%[]"))))
+  (let [fn-pattern "^ *%(fn [^%[]"
+        lambda-pattern "^ *%(λ [^%[]"]
+    ;; functions inside a body form shouldn't be spaced if they're the first thing
+    (and (not (= start-index i))
+         (or (prev:match fn-pattern) (prev:match lambda-pattern)
+             (viewed:match fn-pattern) (viewed:match lambda-pattern)))))
 
 (fn originally-same-lines? [t n1 n2]
   (let [first (. t n1)

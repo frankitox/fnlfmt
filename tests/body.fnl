@@ -41,3 +41,20 @@ has a newline in it"
 
 (m.with-connection [socket-connection "https://fennel-lang.org/see?abc=foo"]
   (socket-connection:read-all))
+
+(fn spaced-out-fns []
+  (fn f1 [] :f1)
+
+  (fn f2 [] :f2)
+
+  (λ f3 [] :f3)
+
+  (λ f4 [] :f4)
+
+  (fn f5 [] :f5)
+
+  (λ f6 [] :f6)
+
+  (λ f7 [] :f7)
+
+  (fn f8 [] :f8))
