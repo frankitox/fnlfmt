@@ -239,7 +239,8 @@ number of handled arguments."
     (let [viewed (view (. t i) inspector (- indent 1))]
       ;; Attempt to fit as many args on a single line until it gets too long.
       (if (or (fennel.comment? (. t (- i 1)))
-              (and (line-exceeded? inspector indent viewed) (not= 2 i)))
+              (and (line-exceeded? inspector indent viewed) (not= 2 i))
+              (< (line (. t (- i 1))) (line (. t i))))
           (set indent (view-with-newline view inspector out t i start-indent))
           (do
             (table.insert out viewed)
@@ -296,7 +297,9 @@ number of handled arguments."
                        (+ start-indent 2)
                        (callee:find "\n")
                        (+ (last-line-length callee) 1)
-                       (+ start-indent (length callee) 2))]
+                       (= (line (. t 1)) (line (. t 2)))
+                       (+ start-indent (length callee) 2)
+                       (+ start-indent 2))]
         ;; indent differently if it's calling a special form with body args
         (if (body-form? callee)
             (view-body t view inspector indent out callee)
